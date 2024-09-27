@@ -17,4 +17,5 @@ class FriendsModel extends Model
     public function user2(){
         return $this->belongsTo(User::class, 'user_id_2');
     }
+
 }

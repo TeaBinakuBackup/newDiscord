@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\Route;
     Route::post('/add/user', [\App\Http\Controllers\SignUpController::class, 'index']);
 
     Route::post('/login', function (Request $request) {
-        $request->validate([
-            'login' => 'required',
-            'password' => 'required',
-        ]);
+//        $request->validate([
+//            'login' => 'required',
+//            'password' => 'required',
+//        ]);
         dump("erdh deri tek");
 
         $credentials = [
@@ -34,9 +34,21 @@ use Illuminate\Support\Facades\Route;
     });
 
     // Protected route
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
     });
 
-    Route::middleware('auth:sanctum')->post('/add/friend/request', [\App\Http\Controllers\FriendRequestController::class,'addFriendRequest']);
+Route::middleware('auth:sanctum')->post('/add/friend/request', [\App\Http\Controllers\FriendRequestController::class,'addFriendRequest']);
+
+
+Route::middleware('auth:sanctum')->post('/get/send/friend/requests', [\App\Http\Controllers\FriendRequestController::class,'sendFriendRequests']);
+Route::middleware('auth:sanctum')->post('/received/send/friend/requests', [\App\Http\Controllers\FriendRequestController::class,'receivedFriendRequests']);
+
+
+Route::middleware('auth:sanctum')->post('/approve/friend/requests', [\App\Http\Controllers\FriendRequestController::class, 'approveFriendRequest']);
+Route::middleware('auth:sanctum')->post('/deny/friend/requests', [\App\Http\Controllers\FriendRequestController::class, 'denyFriendRequest']);
+
+
+Route::middleware('auth:sanctum')->get('/friends', [\App\Http\Controllers\FriendController::class, 'getFriends']);
+
 

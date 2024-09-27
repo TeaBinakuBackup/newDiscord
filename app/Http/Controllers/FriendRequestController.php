@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FriendsModel;
 use App\Models\User;
 use App\Models\FriendRequestModel;
 use Illuminate\Http\Request;
@@ -11,18 +12,16 @@ class FriendRequestController extends Controller
 {
     public function addFriendRequest(Request $request)
     {
-        dump($request->all());
-        dump("po vjen te metoda");
-        // Check if the user exists by username or email
+
         $user = User::where('name', $request->username)
             ->orWhere('email', $request->email)
             ->first();
 
         if ($user) {
             $newFriendRequest = new FriendRequestModel();
-            $newFriendRequest->requester_user_id = Auth::id();  // Current logged-in user
-            $newFriendRequest->requesting_user_id = $user->id;  // The user being requested
-            $newFriendRequest->request_status_id = 1;  // Pending status
+            $newFriendRequest->requester_user_id = Auth::id();
+            $newFriendRequest->requesting_user_id = $user->id;
+            $newFriendRequest->request_status_id = 1;
 
             if ($newFriendRequest->save()) {
                 return response()->json('Friend request sent to user', 200);
@@ -33,5 +32,55 @@ class FriendRequestController extends Controller
             return response()->json('User not found', 404);
         }
     }
+
+    public function sendFriendRequests(){
+
+        $sendFriendRequests=FriendRequestModel::
+        where('requester_user_id',Auth::id())
+            ->where('request_status_id',1)
+            ->with('RequestingUser','RequestStatus')
+            ->get();
+        return response()->json($sendFriendRequests);
+    }
+    public function receivedFriendRequests(){
+        $receivedFriendRequests=FriendRequestModel::
+            where('requesting_user_id',Auth::id())
+            ->where('request_status_id',1)
+            ->with('Requester','RequestStatus')
+            ->get();
+
+        return response()->json($receivedFriendRequests);
+    }
+
+    public function denyFriendRequest(Request $request)
+    {
+
+        $id = $request->request_id;
+
+        $friendRequest = FriendRequestModel::findOrFail($id);
+            $friendRequest->delete();
+
+        return response()->json('Friend request denied!', 200);
+    }
+    public function approveFriendRequest(Request $request)
+    {
+        $id = $request->request_id;
+
+        // Find the friend request by ID
+        $friendRequest = FriendRequestModel::findOrFail($id);
+//        dump($friendRequest);
+        $newFriend=new FriendsModel();
+        $newFriend->user_id_1=$friendRequest->requester_user_id;
+        $newFriend->user_id_2=$friendRequest->requesting_user_id;
+        $newFriend->save();
+        $friendRequest->request_status_id = 2;  // 2 means accepted
+        $friendRequest->save();
+
+
+
+
+        return response()->json('Friend request accepted!', 200);
+    }
+
 }
 
