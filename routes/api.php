@@ -51,8 +51,15 @@ Route::middleware('auth:sanctum')->post('/deny/friend/requests', [\App\Http\Cont
 
 Route::middleware('auth:sanctum')->get('/friends', [\App\Http\Controllers\FriendController::class, 'getFriends']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return $request->user();
+    $user = Auth::user();
+    // Generate the full URL for the avatar if it exists
+    $user->avatar = $user->avatar ? asset('storage/' . $user->avatar) : null;
+    return response()->json($user);
     });
+
+Route::middleware('auth:sanctum')->get('/mood/statuses', function (Request $request) {
+$moodStatuses=\App\Models\MoodStatuses::all();
+    return response()->json($moodStatuses);     });
 
 Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
         // Ensure the user is authenticated before calling tokens()->delete()
@@ -65,5 +72,6 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     });
     Route::middleware('auth:sanctum')->post('/block-user', [\App\Http\Controllers\BlockedUserController::class, 'blockUser']);
     Route::middleware('auth:sanctum')->get('/blocked/users', [\App\Http\Controllers\BlockedUserController::class, 'getBlockedUsers']);
-        Route::middleware('auth:sanctum')->post('/unblock/user', [\App\Http\Controllers\BlockedUserController::class, 'removeBlock']);
+    Route::middleware('auth:sanctum')->post('/unblock/user', [\App\Http\Controllers\BlockedUserController::class, 'removeBlock']);
+    Route::middleware('auth:sanctum')->post('/change/profile/picture', [\App\Http\Controllers\ProfileController::class, 'changeProfilePicture']);
 

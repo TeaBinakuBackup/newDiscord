@@ -13,6 +13,10 @@ class MoodStatusController extends Seeder
      */
     public function run(): void
     {
-        DB::table('mood_statuses')->insert(['name'=>'Active']);
+        DB::table('mood_statuses')->insert([
+            ['name'=>'Active'],
+            ['name'=>'Do not Disturb '],
+            ['name'=>'Invisible']
+        ]);
     }
 }
