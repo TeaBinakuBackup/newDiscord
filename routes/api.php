@@ -75,3 +75,8 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     Route::middleware('auth:sanctum')->post('/unblock/user', [\App\Http\Controllers\BlockedUserController::class, 'removeBlock']);
     Route::middleware('auth:sanctum')->post('/change/profile/picture', [\App\Http\Controllers\ProfileController::class, 'changeProfilePicture']);
 
+    // Define the route in your API routes file (api.php)
+    Route::middleware('auth:sanctum')->post('/conversation/send-message', [\App\Http\Controllers\MessageController::class, 'sendNewMessage']);
+
+
+    Route::middleware('auth:sanctum')->post('/conversation/get-messages', [\App\Http\Controllers\MessageController::class, 'getMessagesWithFriend']);
