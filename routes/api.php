@@ -50,5 +50,20 @@ Route::middleware('auth:sanctum')->post('/deny/friend/requests', [\App\Http\Cont
 
 
 Route::middleware('auth:sanctum')->get('/friends', [\App\Http\Controllers\FriendController::class, 'getFriends']);
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+        return $request->user();
+    });
 
+Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+        // Ensure the user is authenticated before calling tokens()->delete()
+        if ($request->user()) {
+            $request->user()->tokens()->delete();  // Invalidate the user's tokens
+            return response()->json(['message' => 'Logged out successfully'], 200);
+        }
+
+        return response()->json(['message' => 'No authenticated user found'], 401);  // Return an error if the user is not authenticated
+    });
+    Route::middleware('auth:sanctum')->post('/block-user', [\App\Http\Controllers\BlockedUserController::class, 'blockUser']);
+    Route::middleware('auth:sanctum')->get('/blocked/users', [\App\Http\Controllers\BlockedUserController::class, 'getBlockedUsers']);
+        Route::middleware('auth:sanctum')->post('/unblock/user', [\App\Http\Controllers\BlockedUserController::class, 'removeBlock']);
 

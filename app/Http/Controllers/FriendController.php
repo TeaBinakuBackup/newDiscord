@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BlockedUsersModel;
 use App\Models\FriendsModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,4 +16,9 @@ class FriendController extends Controller
             ->get();
         return response()->json($friends);
     }
+
+
+
+
+
 }

@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
 //        ]);
         $this->call(\Database\Seeders\MoodStatusController::class);
         $this->call(\Database\Seeders\UserTypeSeeder::class);
+        $this->call(\Database\Seeders\FriendRequestStatuseSeeder::class);
+        $this->call(\Database\Seeders\UserSeeder::class);
 
     }
 }
