@@ -63,5 +63,12 @@ class MessageController extends Controller
         return response()->json($reaction, 200);
     }
 
+    public function unsendMessage(Request $request){
+        $message=MessagesModel::findOrFail($request->message_id);
+        $message->delete();
+        return response()->json('Message unsend',200);
+
+    }
+
 
 }

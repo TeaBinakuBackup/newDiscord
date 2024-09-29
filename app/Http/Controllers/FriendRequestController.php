@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FriendsModel;
 use App\Models\User;
 use App\Models\FriendRequestModel;
+use App\Notifications\FriendRequestNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,18 +13,23 @@ class FriendRequestController extends Controller
 {
     public function addFriendRequest(Request $request)
     {
-
+        dump($request->all());
+        // Find the user by name or email
         $user = User::where('name', $request->username)
             ->orWhere('email', $request->email)
             ->first();
 
         if ($user) {
+            // Create a new friend request
             $newFriendRequest = new FriendRequestModel();
             $newFriendRequest->requester_user_id = Auth::id();
             $newFriendRequest->requesting_user_id = $user->id;
             $newFriendRequest->request_status_id = 1;
 
             if ($newFriendRequest->save()) {
+                // Send notification to the user being followed/requested
+                $user->notify(new FriendRequestNotification(Auth::user()));
+
                 return response()->json('Friend request sent to user', 200);
             } else {
                 return response()->json('Something went wrong!', 500);

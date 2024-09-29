@@ -81,3 +81,7 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
 
     Route::middleware('auth:sanctum')->post('/conversation/get-messages', [\App\Http\Controllers\MessageController::class, 'getMessagesWithFriend']);
     Route::middleware('auth:sanctum')->post('/message/react', [\App\Http\Controllers\MessageController::class, 'addReaction']);
+    Route::middleware('auth:sanctum')->post('/unsend/message', [\App\Http\Controllers\MessageController::class, 'unsendMessage']);
+    Route::middleware('auth:sanctum')->get('/notifications', [\App\Http\Controllers\NotificationController::class, 'getNotifications']);
+    Route::middleware('auth:sanctum')->post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markNotificationAsRead']);
+
