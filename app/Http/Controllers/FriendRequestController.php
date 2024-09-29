@@ -8,6 +8,7 @@ use App\Models\FriendRequestModel;
 use App\Notifications\FollowRequestNotification3;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\NowFollowingNotification;
 
 class FriendRequestController extends Controller
 {
@@ -34,11 +35,9 @@ class FriendRequestController extends Controller
                 $user->notify(new FollowRequestNotification3(Auth::user()));
 
                 // Log the notification attempt
-               dump('Notification sent to user: ' . $user->id);
 
             } catch (\Exception $e) {
                 // Catch any exceptions and log them
-               dump('Notification failed: ' . $e->getMessage());
                 return response()->json('Notification failed: ' . $e->getMessage(), 500);
             }
 
@@ -87,21 +86,32 @@ class FriendRequestController extends Controller
 
         // Find the friend request by ID
         $friendRequest = FriendRequestModel::findOrFail($id);
-//        dump($friendRequest);
-        $newFriend=new FriendsModel();
-        $newFriend->user_id_1=$friendRequest->requester_user_id;
-        $newFriend->user_id_2=$friendRequest->requesting_user_id;
+
+        // Create the friendship (user1 follows user2)
+        $newFriend = new FriendsModel();
+        $newFriend->user_id_1 = $friendRequest->requester_user_id;
+        $newFriend->user_id_2 = $friendRequest->requesting_user_id;
         $newFriend->save();
-        //added to follow each other upon confirm
-        $newFriend2=new FriendsModel();
-        $newFriend2->user_id_1=$friendRequest->requesting_user_id;
-        $newFriend2->user_id_2=$friendRequest->requester_user_id;
+
+        // Create the reciprocal friendship (user2 follows user1)
+        $newFriend2 = new FriendsModel();
+        $newFriend2->user_id_1 = $friendRequest->requesting_user_id;
+        $newFriend2->user_id_2 = $friendRequest->requester_user_id;
         $newFriend2->save();
+
+        // Update friend request status to accepted
         $friendRequest->request_status_id = 2;  // 2 means accepted
         $friendRequest->save();
 
+        // Notify both users that they are now following each other
+        $user1 = User::find($friendRequest->requester_user_id);  // User who sent the friend request
+        $user2 = User::find($friendRequest->requesting_user_id);  // User who received the request
 
+        // Notify user1 that user2 is now following them
+        $user1->notify(new NowFollowingNotification($user2));
 
+        // Notify user2 that user1 is now following them
+        $user2->notify(new NowFollowingNotification($user1));
 
         return response()->json('Friend request accepted!', 200);
     }

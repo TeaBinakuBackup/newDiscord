@@ -85,3 +85,6 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     Route::middleware('auth:sanctum')->get('/notifications', [\App\Http\Controllers\NotificationController::class, 'getNotifications']);
     Route::middleware('auth:sanctum')->post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markNotificationAsRead']);
 
+
+    Route::middleware('auth:sanctum')->post('/remove/friend', [\App\Http\Controllers\FriendController::class, 'removeFriend']);
+

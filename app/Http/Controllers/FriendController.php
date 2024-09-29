@@ -25,6 +25,15 @@ class FriendController extends Controller
         return response()->json($friends);
     }
 
+    public function removeFriend(Request $request){
+        $friend=FriendsModel::find($request->id);
+
+        $friend->delete();
+
+        return response()->json('Friend removed',200);
+    }
+
+
 
 
 
