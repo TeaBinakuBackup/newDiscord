@@ -5,39 +5,52 @@ namespace App\Http\Controllers;
 use App\Models\FriendsModel;
 use App\Models\User;
 use App\Models\FriendRequestModel;
-use App\Notifications\FriendRequestNotification;
+use App\Notifications\FollowRequestNotification3;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class FriendRequestController extends Controller
 {
     public function addFriendRequest(Request $request)
-    {
-        dump($request->all());
-        // Find the user by name or email
-        $user = User::where('name', $request->username)
-            ->orWhere('email', $request->email)
-            ->first();
+{
+    dump($request->all());
 
-        if ($user) {
-            // Create a new friend request
-            $newFriendRequest = new FriendRequestModel();
-            $newFriendRequest->requester_user_id = Auth::id();
-            $newFriendRequest->requesting_user_id = $user->id;
-            $newFriendRequest->request_status_id = 1;
+    // Find the user by name or email
+    $user = User::where('name', $request->username)
+        ->orWhere('email', $request->email)
+        ->first();
 
-            if ($newFriendRequest->save()) {
-                // Send notification to the user being followed/requested
-                $user->notify(new FriendRequestNotification(Auth::user()));
+    if ($user) {
+        // Create a new friend request
+        $newFriendRequest = new FriendRequestModel();
+        $newFriendRequest->requester_user_id = Auth::id();
+        $newFriendRequest->requesting_user_id = $user->id;
+        $newFriendRequest->request_status_id = 1;
 
-                return response()->json('Friend request sent to user', 200);
-            } else {
-                return response()->json('Something went wrong!', 500);
+        if ($newFriendRequest->save()) {
+            // Send notification to the user being followed/requested
+            try {
+                // Try sending the notification and log the process
+                $user->notify(new FollowRequestNotification3(Auth::user()));
+
+                // Log the notification attempt
+               dump('Notification sent to user: ' . $user->id);
+
+            } catch (\Exception $e) {
+                // Catch any exceptions and log them
+               dump('Notification failed: ' . $e->getMessage());
+                return response()->json('Notification failed: ' . $e->getMessage(), 500);
             }
+
+            return response()->json('Friend request sent to user', 200);
         } else {
-            return response()->json('User not found', 404);
+            return response()->json('Something went wrong!', 500);
         }
+    } else {
+        return response()->json('User not found', 404);
     }
+}
+
 
     public function sendFriendRequests(){
 
