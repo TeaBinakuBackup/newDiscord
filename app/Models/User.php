@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar'
     ];
 
     /**
@@ -56,5 +57,16 @@ class User extends Authenticatable
     public function moodStatus()
     {
         return $this->belongsTo(MoodStatuses::class, 'mood_status_id');
+    }
+    public function getAvatarAttribute($value)
+    {
+        // Check if the user has an avatar
+        if ($value) {
+            // Return the full path to the avatar if it exists
+            return asset('storage/' . $value);
+        }
+
+        // Return a default avatar if the user does not have an avatar
+        return asset('storage/icon2.png'); // Ensure you have a default avatar in storage
     }
 }

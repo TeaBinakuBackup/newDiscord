@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReactionToMessagesModel extends Model
 {
-    protected $table = 'reactions_to_messages';
+    protected $table = 'reaction_to_messages';
 
     protected $fillable = ['emoji','reacted_by','message_id',];
 

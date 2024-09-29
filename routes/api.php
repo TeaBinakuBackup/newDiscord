@@ -80,3 +80,4 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
 
 
     Route::middleware('auth:sanctum')->post('/conversation/get-messages', [\App\Http\Controllers\MessageController::class, 'getMessagesWithFriend']);
+    Route::middleware('auth:sanctum')->post('/message/react', [\App\Http\Controllers\MessageController::class, 'addReaction']);

@@ -73,6 +73,11 @@ class FriendRequestController extends Controller
         $newFriend->user_id_1=$friendRequest->requester_user_id;
         $newFriend->user_id_2=$friendRequest->requesting_user_id;
         $newFriend->save();
+        //added to follow each other upon confirm
+        $newFriend2=new FriendsModel();
+        $newFriend2->user_id_1=$friendRequest->requesting_user_id;
+        $newFriend2->user_id_2=$friendRequest->requester_user_id;
+        $newFriend2->save();
         $friendRequest->request_status_id = 2;  // 2 means accepted
         $friendRequest->save();
 
